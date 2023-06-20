@@ -68,20 +68,21 @@ jobs:
           if [ -z "$output" ]; then
             echo "Created bucket not found."
             exit 1
+          else echo "Bucket with random name was found: $output"
           fi
 
-#      - name: Send a Slack notification
-#        if: failure() || github.event_name != 'pull_request'
-#        uses: ravsamhq/notify-slack-action@v2
-#        with:
-#          status: ${{ job.status }}
-#          token: ${{ secrets.GITHUB_TOKEN }}
-#          notification_title: "{workflow} has {status_message}"
-#          message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>"
-#          footer: "Linked Repo <{repo_url}|{repo}> | <{run_url}|View Workflow run>"
-#          notify_when: "failure"
-#        env:
-#          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      - name: Send a Slack notification
+        if: failure() || github.event_name != 'pull_request'
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          notification_title: "{workflow} has {status_message}"
+          message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>"
+          footer: "Linked Repo <{repo_url}|{repo}> | <{run_url}|View Workflow run>"
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Generate a Diagnostic Report
         if: failure()
