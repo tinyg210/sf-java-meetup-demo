@@ -1,14 +1,14 @@
-name: Deploy on LocalStack
+name: Create Infra on LocalStack
 
 on:
   push:
     paths-ignore:
       - 'README.md'
     branches:
-      - master
+      - gh-actions
   pull_request:
     branches:
-      - master
+      - gh-actions
   schedule:
     # “At 00:00 on Sunday.”
     - cron: "0 0 * * 0"
