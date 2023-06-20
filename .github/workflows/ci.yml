@@ -62,17 +62,13 @@ jobs:
           cd terraform
           bash run-tflocal.sh
 
-#      - name: curl endpoint
-#        run: |
-#          rest_api=$(awslocal apigateway get-rest-apis | jq -r '.items[0].id')
-#          url="https://${rest_api}.execute-api.localhost.localstack.cloud:4566/local/upload"
-#          echo "curling $url ..."
-#          result=$(curl $url)
-#          if [[ "$result" != *"<h1>AWS Transcribe Example</h1>"* ]]; then
-#            echo "unexpected response"
-#            echo $result
-#            exit 1
-#          fi
+      - name: Check for Bucket
+        run: |
+          output=$(awslocal s3api list-buckets --query "Buckets[?contains(Name, 'shipment-picture-bucket')].Name" --output text)
+          if [ -z "$output" ]; then
+            echo "Created bucket not found."
+            exit 1
+          fi
 
 #      - name: Send a Slack notification
 #        if: failure() || github.event_name != 'pull_request'
