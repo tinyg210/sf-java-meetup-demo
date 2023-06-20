@@ -27,11 +27,24 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Set up JDK
+          uses: actions/setup-java@v2
+          with:
+            java-version: '17'
+
+      - name: Set up Maven
+        run: sudo apt-get install -y maven
+
       - name: Install localstack & awslocal
         run: |
           pip install localstack
           pip install terraform-local
           pip install awscli-local
+
+      - name: Build project
+          run: |
+          cd shipment-picture-lambda-validator
+          mvn clean package shade:shade
 
       - name: Start LocalStack
         run: |
@@ -60,18 +73,18 @@ jobs:
 #            exit 1
 #          fi
 
-      - name: Send a Slack notification
-        if: failure() || github.event_name != 'pull_request'
-        uses: ravsamhq/notify-slack-action@v2
-        with:
-          status: ${{ job.status }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          notification_title: "{workflow} has {status_message}"
-          message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>"
-          footer: "Linked Repo <{repo_url}|{repo}> | <{run_url}|View Workflow run>"
-          notify_when: "failure"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+#      - name: Send a Slack notification
+#        if: failure() || github.event_name != 'pull_request'
+#        uses: ravsamhq/notify-slack-action@v2
+#        with:
+#          status: ${{ job.status }}
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          notification_title: "{workflow} has {status_message}"
+#          message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>"
+#          footer: "Linked Repo <{repo_url}|{repo}> | <{run_url}|View Workflow run>"
+#          notify_when: "failure"
+#        env:
+#          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Generate a Diagnostic Report
         if: failure()
