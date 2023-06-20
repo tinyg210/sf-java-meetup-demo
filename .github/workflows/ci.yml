@@ -28,9 +28,9 @@ jobs:
           python-version: '3.9'
 
       - name: Set up JDK
-          uses: actions/setup-java@v2
-          with:
-            java-version: '17'
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
 
       - name: Set up Maven
         run: sudo apt-get install -y maven
@@ -42,7 +42,7 @@ jobs:
           pip install awscli-local
 
       - name: Build project
-          run: |
+        run: |
           cd shipment-picture-lambda-validator
           mvn clean package shade:shade
 
