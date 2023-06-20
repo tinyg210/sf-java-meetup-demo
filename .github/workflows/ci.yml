@@ -30,6 +30,7 @@ jobs:
       - name: Install localstack & awslocal
         run: |
           pip install localstack
+          pip install terraform-local
           pip install awscli-local
 
       - name: Start LocalStack
