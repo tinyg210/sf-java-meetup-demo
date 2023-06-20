@@ -27,6 +27,11 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Install localstack & awslocal
+        run: |
+          pip install localstack
+          pip install awscli-local
+
       - name: Start LocalStack
         run: |
           docker pull localstack/localstack:latest
