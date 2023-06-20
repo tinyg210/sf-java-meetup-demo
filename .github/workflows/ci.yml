@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  integration-tests:
+  infrastructure-check:
     name: Setup infrastructure using Terraform
     runs-on: ubuntu-latest
     steps:
