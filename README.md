@@ -241,4 +241,9 @@ the application have not changed.
 
 There you have it, smooth transition from AWS to Localstack, with no code change. 👍🏻
 
+## Contributing
+
+We appreciate your interest in contributing to our project and are always looking for new ways to improve the developer experience. We welcome feedback, bug reports, and even feature ideas from the community.
+Please refer to the [contributing file](CONTRIBUTING.md) for more details on how to get started. 
+
 
