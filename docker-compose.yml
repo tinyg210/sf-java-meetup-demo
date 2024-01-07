@@ -10,7 +10,6 @@ services:
     environment:
       - DEBUG=1  # enable more verbose logs
       - DOCKER_HOST=unix:///var/run/docker.sock #unix socket to communicate with the docker daemon
-#      - LAMBDA_KEEPALIVE_MS=0 # disable lambda keepalive
       - LOCALSTACK_HOST=localstack # where services are available from other containers
       - ENFORCE_IAM=1 # enforce IAM policies
     volumes:
