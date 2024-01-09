@@ -26,7 +26,7 @@ variable "aws_region" {
 
 variable "account_id" {
   description = "AWS Account ID"
-  default     = "932043840972"
+  default     = "YOUR_AWS_ACCOUNT_NUMBER"
 }
 
 variable "sns_topic_name" {
