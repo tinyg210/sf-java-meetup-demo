@@ -64,7 +64,7 @@ public class ServiceHandler implements RequestStreamHandler {
 
     // Check if the image was already processed
     if (s3ObjectResponse.response().metadata().entrySet().stream().anyMatch(
-        entry -> entry.getKey().equals("exclude-lambda") && entry.getValue().equals("true"))) {
+        entry -> entry.getKey().equals("skip-processing") && entry.getValue().equals("true"))) {
       context.getLogger().log("Object already present.");
       return;
     }
@@ -98,7 +98,7 @@ public class ServiceHandler implements RequestStreamHandler {
         var putObjectRequest = PutObjectRequest.builder()
             .bucket(BUCKET_NAME)
             .key(objectKey)
-            .metadata(Collections.singletonMap("exclude-lambda", "true"))
+            .metadata(Collections.singletonMap("skip-processing", "true"))
             .build();
 
         s3Client.putObject(putObjectRequest, RequestBody.fromBytes(imageBytes));
@@ -114,7 +114,7 @@ public class ServiceHandler implements RequestStreamHandler {
       var putObjectRequest = PutObjectRequest.builder()
           .bucket(BUCKET_NAME)
           .key(objectKey)
-          .metadata(Collections.singletonMap("exclude-lambda", "true"))
+          .metadata(Collections.singletonMap("skip-processing", "true"))
           .build();
 
       s3Client.putObject(putObjectRequest, RequestBody.fromBytes(
@@ -143,7 +143,7 @@ public class ServiceHandler implements RequestStreamHandler {
         return keys.iterator().next();
       }
     } catch (IOException ioe) {
-      context.getLogger().log("caught IOException reading input stream");
+      context.getLogger().log("caught IOException reading input stream: " + ioe.getMessage());
     }
     return null;
   }
