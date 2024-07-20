@@ -13,7 +13,7 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region = local.aws_region
 }
 
 provider "random" {
@@ -22,11 +22,6 @@ provider "random" {
 resource "random_pet" "random_name" {
   length    = 2
   separator = "-"
-}
-
-variable "aws_region" {
-  description = "AWS region"
-  default     = "us-east-1"
 }
 
 variable "account_id" {
@@ -85,10 +80,10 @@ resource "aws_s3_bucket" "lambda_code_bucket" {
 }
 
 # Lambda source code
-resource "aws_s3_bucket_object" "lambda_code" {
-  source = "../shipment-picture-lambda-validator/target/shipment-picture-lambda-validator.jar"
+resource "aws_s3_object" "lambda_code" {
   bucket = aws_s3_bucket.lambda_code_bucket.id
   key    = "shipment-picture-lambda-validator.jar"
+  source = "../shipment-picture-lambda-validator/target/shipment-picture-lambda-validator.jar"
 }
 
 # Lambda definition
@@ -98,7 +93,7 @@ resource "aws_lambda_function" "shipment_picture_lambda_validator" {
   runtime       = "java17"
   role          = aws_iam_role.lambda_exec.arn
   s3_bucket     = aws_s3_bucket.lambda_code_bucket.id
-  s3_key        = aws_s3_bucket_object.lambda_code.key
+  s3_key        = aws_s3_object.lambda_code.key
   memory_size   = 512
   timeout       = 60
   environment {
