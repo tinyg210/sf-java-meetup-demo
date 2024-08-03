@@ -3,6 +3,7 @@ package dev.ancaghenade.shipmentlistdemo.controller;
 import dev.ancaghenade.shipmentlistdemo.service.ShipmentService;
 import io.awspring.cloud.sqs.annotation.SqsListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.json.JSONObject;
@@ -31,7 +32,7 @@ public class MessageReceiver {
 
   @SqsListener(value = "update_shipment_picture_queue")
   public void loadMessagesFromQueue(String notification) {
-    LOGGER.info("Message from queue %s" + notification);
+    LOGGER.info("Message from queue {}", notification);
 
     JSONObject obj = new JSONObject(notification);
     String message = obj.getString("Message");
@@ -39,52 +40,43 @@ public class MessageReceiver {
 
     shipmentService.updateImageLink(shipmentId, message);
 
-    for (var sseEmitter : emitters) {
+    List<SseEmitter> deadEmitters = new ArrayList<>();
+    emitters.forEach(emitter -> {
       try {
-        sseEmitter.send(
-            shipmentId);
-        sleep(sseEmitter);
+        emitter.send(shipmentId);
+        LOGGER.info("SSE event sent to emitter: {}", emitter);
       } catch (IOException e) {
-        sseEmitter.completeWithError(e);
+        LOGGER.error("Error sending SSE event: {}", e.getMessage(), e);
+        emitter.completeWithError(e);
+        deadEmitters.add(emitter);
       }
-      sseEmitter.complete();
-      LOGGER.info("SSE emitter complete.");
-    }
+    });
+    emitters.removeAll(deadEmitters);
   }
 
-  @GetMapping(value = "/push-endpoint")
+  @GetMapping("/push-endpoint")
   @CrossOrigin(origins = "http://localhost:3000")
   public SseEmitter pushData() {
-
     SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
     emitter.onCompletion(() -> {
-      synchronized (emitters) {
-        emitters.remove(emitter);
-        LOGGER.info("SseEmitter is completed");
-      }
+      emitters.remove(emitter);
     });
 
     emitter.onTimeout(() -> {
-      synchronized (emitters) {
-        emitters.remove(emitter);
-      }
-      emitter.complete();
-      LOGGER.info("SseEmitter is timed out");
+      emitters.remove(emitter);
+      LOGGER.info("SseEmitter timed out.");
     });
 
     emitter.onError(e -> {
-      synchronized (emitters) {
-        emitters.remove(emitter);
-      }
+      emitters.remove(emitter);
+      LOGGER.error("SseEmitter error: {}", e.getMessage(), e);
     });
 
-    synchronized (emitters) {
-      emitters.add(emitter);
-    }
-
+    emitters.add(emitter);
     return emitter;
   }
+
 
   private void sleep(SseEmitter sseEmitter) {
     try {

@@ -26,7 +26,7 @@ resource "random_pet" "random_name" {
 
 variable "account_id" {
   description = "AWS Account ID"
-  default     = "YOUR_AWS_ACCOUNT_NUMBER"
+  default     = "932043840972"
 }
 
 variable "sns_topic_name" {
