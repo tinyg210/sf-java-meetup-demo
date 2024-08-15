@@ -197,7 +197,7 @@ resource "aws_sqs_queue" "update_shipment_picture_queue" {
 }
 
 # Define subscription
-resource "aws_sns_topic_subscription" "my_subscription" {
+resource "aws_sns_topic_subscription" "shipment_app_subscription" {
   topic_arn = aws_sns_topic.update_shipment_picture_topic.arn
   protocol  = "sqs"
   endpoint  = aws_sqs_queue.update_shipment_picture_queue.arn
@@ -205,7 +205,7 @@ resource "aws_sns_topic_subscription" "my_subscription" {
 
 
 # Define policy to allow SNS to send message to SQS
-resource "aws_sqs_queue_policy" "my_queue_policy" {
+resource "aws_sqs_queue_policy" "shipment_app_queue_policy" {
   queue_url = aws_sqs_queue.update_shipment_picture_queue.id
 
   policy = <<EOF
@@ -230,7 +230,7 @@ EOF
 }
 
 # Define the SQS subscription
-resource "aws_sns_topic_subscription" "my_topic_subscription" {
+resource "aws_sns_topic_subscription" "shipment_app_topic_subscription" {
   topic_arn = aws_sns_topic.update_shipment_picture_topic.arn
   protocol  = "sqs"
   endpoint  = aws_sqs_queue.update_shipment_picture_queue.arn
