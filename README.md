@@ -30,7 +30,7 @@ using actual AWS dependencies to having them emulated on LocalStack for your *de
 - [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) (+ Python pip for [tflocal](https://pypi.org/project/terraform-local/)) for creating AWS & LocalStack resources
 - [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) - for running the frontend app
 
-#### What it does
+#### Application Overview
 
 *shipment-list-demo* is a Spring Boot application dealing with CRUD operations a person can execute
 on a bunch of shipments that they're allowed to view - think of it like the Post app.
@@ -48,7 +48,7 @@ The AWS services involved are:
 
 #### How to use it
 
-We’ll walk through a few scenarios using the application, and we expect it to maintain the behavior in both production (AWS) and development (LocalStack) environments.
+We’ll walk through a few actions using the application, and we expect it to maintain the behavior in both production (AWS) and development (LocalStack) environments.
 
 Let's take advantage of one of the core features of the Spring framework that allows us to bind our
 beans to different profiles, such as `dev`, and `prod`. Of course, these beans need to know how to
@@ -61,7 +61,7 @@ The Terraform configuration file will create the needed S3 bucket, the DynamoDB 
 sample data, the Lambda function that will help with the picture processing (make sure you create the jar),
 the SQS and SNS which will bring back the notification when the processing is finished.
 
-The Terraform configuration file now randomly generates names for the bucket, in order to avoid conflicts
+Terraform randomly generates names for the bucket, in order to avoid conflicts
 at a global scale on AWS. This name will be written out to a properties file, which the app will pick up
 and use for the S3 client. Furthermore, the name is also passed as an environment variable to the Lambda function by Terraform,
 so there's no need to worry about managing it.
