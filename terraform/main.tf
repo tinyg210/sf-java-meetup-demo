@@ -99,8 +99,6 @@ resource "aws_lambda_function" "shipment_picture_lambda_validator" {
   environment {
     variables = {
       BUCKET = aws_s3_bucket.shipment_picture_bucket.bucket
-      SNS_TOPIC_ARN_DEV = local.sns_topic_arn_dev
-      SNS_TOPIC_ARN_PROD = local.sns_topic_arn_prod
     }
   }
 }
@@ -145,10 +143,15 @@ EOF
 
 
 # Attach policy (S3 access) to Lambda role
-resource "aws_iam_role_policy_attachment" "lambda_exec_policy" {
+resource "aws_iam_role_policy_attachment" "lambda_exec_policy_s3" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
   role       = aws_iam_role.lambda_exec.name
 }
+
+#resource "aws_iam_role_policy_attachment" "lambda_exec_policy_sns" {
+#  policy_arn = "arn:aws:iam::aws:policy/AmazonSNSReadOnlyAccess"
+#  role       = aws_iam_role.lambda_exec.name
+#}
 
 # Define IAM role policy that grants permissions to access & process on AWS CloudWatch Logs, S3
 resource "aws_iam_role_policy" "lambda_exec_policy" {
@@ -167,23 +170,35 @@ resource "aws_iam_role_policy" "lambda_exec_policy" {
               "logs:PutLogEvents"
             ],
             "Resource": "arn:aws:logs:*:*:*"
-          },
-          {
+        },
+        {
             "Effect": "Allow",
             "Action": [
               "s3:GetObject",
-              "s3:PutObject",
-              "sns:Publish"
+              "s3:PutObject"
             ],
             "Resource": [
               "arn:aws:s3:::shipment-picture-bucket-${random_pet.random_name.id}",
-              "arn:aws:s3:::shipment-picture-bucket-${random_pet.random_name.id}/*",
-              "${aws_sns_topic.update_shipment_picture_topic.arn}"
+              "arn:aws:s3:::shipment-picture-bucket-${random_pet.random_name.id}/*"
             ]
-          }
-          ]
-          }
-          EOF
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+              "sns:Publish"
+            ],
+            "Resource": "${aws_sns_topic.update_shipment_picture_topic.arn}"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+              "sns:ListTopics"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+EOF
 }
 
 # Define the topic

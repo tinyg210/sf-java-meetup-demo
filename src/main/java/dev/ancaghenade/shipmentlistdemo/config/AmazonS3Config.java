@@ -22,5 +22,4 @@ public class AmazonS3Config extends AWSClientConfig {
         .endpointOverride(URI.create(awsS3EndPoint))
         .build();
   }
-
 }
