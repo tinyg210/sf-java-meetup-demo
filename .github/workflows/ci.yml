@@ -75,4 +75,6 @@ jobs:
         env:
           LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
         if: success()
-        run: localstack ephemeral create --name java-meetup-test
+        run: |
+          localstack pod save java-meetup-shipment-list
+          localstack ephemeral create --name java-meetup-test --env AUTO_LOAD_POD=java-meetup-shipment-list
