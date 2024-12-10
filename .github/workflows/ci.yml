@@ -46,7 +46,7 @@ jobs:
         run: |
           cd shipment-picture-lambda-validator
           mvn clean package shade:shade
-          mv target/shipment-picture-lambda-validator.jar ../terraform/shipment-picture-lambda-validator/target/shipment-picture-lambda-validator.jar
+          mv target/shipment-picture-lambda-validator.jar terraform/shipment-picture-lambda-validator/target/shipment-picture-lambda-validator.jar
           cd..
 
       - name: Start LocalStack
