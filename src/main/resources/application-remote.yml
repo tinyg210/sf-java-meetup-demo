@@ -1,0 +1,11 @@
+aws:
+  credentials:
+    access-key: test_access_key
+    secret-key: test_secret_access_key
+  s3:
+    endpoint: https://ls-e2a82s9klubt6.sandbox.localstack.cloud/
+  dynamodb:
+    endpoint: https://ls-e2a82s9klubt6.sandbox.localstack.cloud/
+  sqs:
+    endpoint: https://ls-e2a82s9klubt6.sandbox.localstack.cloud/000000000000
+  region: us-east-1

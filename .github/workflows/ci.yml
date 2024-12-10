@@ -46,21 +46,21 @@ jobs:
         run: |
           cd shipment-picture-lambda-validator
           mvn clean package shade:shade
+          mv target/shipment-picture-lambda-validator.jar ../terraform/shipment-picture-lambda-validator/target/shipment-picture-lambda-validator.jar
+          cd..
 
       - name: Start LocalStack
+        env:
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
         run: |
-          docker pull localstack/localstack:latest
-          # Start LocalStack in the background
-          LS_LOG=trace localstack start -d
-          # Wait 30 seconds for the LocalStack container to become ready before timing out
-          echo "Waiting for LocalStack startup..."
-          localstack wait -t 15
+          docker compose up -d
           echo "Startup complete"
 
       - name: Run Terraform Config File
         run: |
           cd terraform
-          bash run-tflocal.sh
+          tflocal init
+          tflocal apply -auto-approve
 
       - name: Check for Bucket
         run: |
@@ -71,27 +71,6 @@ jobs:
           else echo "Bucket with random name was found: $output"
           fi
 
-      - name: Send a Slack notification
-        if: failure() || github.event_name != 'pull_request'
-        uses: ravsamhq/notify-slack-action@v2
-        with:
-          status: ${{ job.status }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          notification_title: "{workflow} has {status_message}"
-          message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>"
-          footer: "Linked Repo <{repo_url}|{repo}> | <{run_url}|View Workflow run>"
-          notify_when: "failure"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-      - name: Generate a Diagnostic Report
-        if: failure()
-        run: |
-          curl -s localhost:4566/_localstack/diagnose | gzip -cf > diagnose.json.gz
-
-      - name: Upload the Diagnostic Report
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: diagnose.json.gz
-          path: ./diagnose.json.gz
+      - name: Create Ephemeral Instance
+        if: success()
+        run: localstack ephemeral create --name java-meetup-test

@@ -20,6 +20,7 @@ public class AmazonS3Config extends AWSClientConfig {
         .region(Region.of(awsRegion))
         .credentialsProvider(amazonAWSCredentialsProvider())
         .endpointOverride(URI.create(awsS3EndPoint))
+        .forcePathStyle(true)
         .build();
   }
 }
