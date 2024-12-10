@@ -47,7 +47,7 @@ jobs:
           cd shipment-picture-lambda-validator
           mvn clean package shade:shade
           mv target/shipment-picture-lambda-validator.jar ../terraform/shipment-picture-lambda-validator/shipment-picture-lambda-validator.jar
-          cd..
+          cd ..
 
       - name: Start LocalStack
         env:
