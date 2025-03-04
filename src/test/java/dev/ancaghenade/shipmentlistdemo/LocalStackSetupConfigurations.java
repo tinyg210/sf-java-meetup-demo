@@ -10,10 +10,12 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.MountableFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -21,6 +23,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.s3.S3Client;
 
+import java.io.File;
 import java.net.URI;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -33,20 +36,17 @@ public class LocalStackSetupConfigurations {
     protected static LocalStackContainer localStack =
             new LocalStackContainer(DockerImageName.parse("localstack/localstack-pro:latest"))
                     .withEnv("LAMBDA_REMOVE_CONTAINERS", "1")
-                    .withEnv("EXTENSION_AUTO_INSTALL", "localstack-extension-terraform-init")
                     .withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN"))
-                    .withFileSystemBind("./shipment-picture-lambda-validator/target/shipment-picture-lambda-validator.jar",
-                            "/etc/localstack/init/ready.d/shipment-picture-lambda-validator/shipment-picture-lambda-validator.jar")
-                    .withFileSystemBind("./terraform",
-                            "/etc/localstack/init/ready.d")
-                    .withStartupTimeout(Duration.of(5, ChronoUnit.MINUTES))
-                    .withEnv("DEBUG", "1");
-
+                    // remember to use the correct bucket name for the cloud pod
+                    .withEnv("AUTO_LOAD_POD", "devnexus-demo-pod")
+                                                .withEnv("DEBUG", "1")
+                    .waitingFor(Wait.forLogMessage(".*Ready\\..*", 1))
+                    .withStartupTimeout(Duration.ofMinutes(3));
     protected static final Logger LOGGER = LoggerFactory.getLogger(LocalStackSetupConfigurations.class);
     protected static Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(LOGGER);
     protected TestRestTemplate restTemplate = new TestRestTemplate();
 
-    protected static final String BUCKET_NAME = "ancas-demo-bucket";
+    protected static final String BUCKET_NAME = "shipment-picture-bucket-grown-vervet";
     protected static String BASE_URL = "http://localhost:8081";
     protected static Region region = Region.of(localStack.getRegion());
 
