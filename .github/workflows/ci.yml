@@ -58,6 +58,7 @@ jobs:
 
       - name: Run Terraform Config File
         run: |
+          pwd
           cd terraform
           tflocal init
           tflocal apply --auto-approve
