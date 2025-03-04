@@ -60,7 +60,7 @@ jobs:
         run: |
           cd terraform
           tflocal init
-          tflocal apply -auto-approve
+          tflocal apply --auto-approve
 
       - name: Check for Bucket
         run: |
