@@ -38,7 +38,6 @@ public class LambdaIntegrationTest extends LocalStackSetupConfigurations {
     public static void setup()  {
         LocalStackSetupConfigurations.setupConfig();
         localStack.followOutput(logConsumer);
-
     }
 
     @Test
