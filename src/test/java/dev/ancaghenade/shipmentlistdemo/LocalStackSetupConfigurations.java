@@ -41,7 +41,7 @@ public class LocalStackSetupConfigurations {
                     .withEnv("AUTO_LOAD_POD", "devnexus-demo-pod")
                                                 .withEnv("DEBUG", "1")
                     .waitingFor(Wait.forLogMessage(".*Ready\\..*", 1))
-                    .withStartupTimeout(Duration.ofMinutes(3));
+                    .withStartupTimeout(Duration.ofMinutes(5));
     protected static final Logger LOGGER = LoggerFactory.getLogger(LocalStackSetupConfigurations.class);
     protected static Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(LOGGER);
     protected TestRestTemplate restTemplate = new TestRestTemplate();
